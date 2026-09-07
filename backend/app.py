@@ -39,7 +39,7 @@ def extract_keywords(texts, top_n=10):
     return [{"word": w, "count": c} for w, c in counts.most_common(top_n)]
 
 
-@app.route("/analyze", methods=["POST"])
+@app.route("/api/analyze", methods=["POST"])
 def analyze():
     data = request.get_json()
     feedback = data.get("feedback", [])
@@ -76,7 +76,7 @@ def analyze():
     })
 
 
-@app.route("/health", methods=["GET"])
+@app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok"})
 
@@ -118,7 +118,7 @@ def build_system_message(context):
     return {"role": "system", "content": "\n\n".join(parts)}
 
 
-@app.route("/chat/info", methods=["GET"])
+@app.route("/api/chat/info", methods=["GET"])
 def chat_info():
     return jsonify({
         "keyConfigured": bool(nvidia_key()),
@@ -130,7 +130,7 @@ def chat_info():
     })
 
 
-@app.route("/chat", methods=["POST"])
+@app.route("/api/chat", methods=["POST"])
 def chat():
     body = request.get_json(silent=True) or {}
     messages = body.get("messages") or []

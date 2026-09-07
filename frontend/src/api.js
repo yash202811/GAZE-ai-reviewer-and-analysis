@@ -2,7 +2,13 @@ import axios from "axios";
 
 // Defaults to the Flask backend on localhost:5000.
 // Override at dev time with:  VITE_API_BASE=http://localhost:5001 npm run dev
-const API_BASE = (import.meta.env && import.meta.env.VITE_API_BASE) || "http://127.0.0.1:5000";
+const configuredBase = import.meta.env && import.meta.env.VITE_API_BASE;
+const API_BASE =
+  configuredBase && configuredBase.trim() !== ""
+    ? configuredBase
+    : import.meta.env.PROD
+      ? ""
+      : "http://127.0.0.1:5000";
 
 const client = axios.create({
   baseURL: API_BASE,
@@ -13,13 +19,13 @@ const client = axios.create({
 export { API_BASE };
 
 export async function analyzeFeedback(feedback) {
-  const response = await client.post("/analyze", { feedback });
+  const response = await client.post("/api/analyze", { feedback });
   return response.data;
 }
 
 export async function checkBackendHealth() {
   try {
-    const response = await client.get("/health", { timeout: 4000 });
+    const response = await client.get("/api/health", { timeout: 4000 });
     return response.status === 200 && response.data?.status === "ok";
   } catch {
     return false;
@@ -31,7 +37,7 @@ export async function checkBackendHealth() {
 export async function chatWithAssistant({ messages, context, onDelta, signal }) {
   let res;
   try {
-    res = await fetch(`${API_BASE}/chat`, {
+    res = await fetch(`${API_BASE}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages, context: context || null, stream: true }),
@@ -90,7 +96,7 @@ export async function chatWithAssistant({ messages, context, onDelta, signal }) 
 
 export async function fetchChatInfo() {
   try {
-    const res = await fetch(`${API_BASE}/chat/info`, { signal: AbortSignal.timeout(4000) });
+    const res = await fetch(`${API_BASE}/api/chat/info`, { signal: AbortSignal.timeout(4000) });
     if (!res.ok) return { keyConfigured: false, model: null };
     return await res.json();
   } catch {
