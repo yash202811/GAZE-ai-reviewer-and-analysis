@@ -1,0 +1,25 @@
+# Secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node / frontend
+node_modules/
+frontend/dist/
+
+# Logs & local tooling
+*.log
+.freebuff/
+
+# Separate project (has its own Git repo)
+/Feedback-Intelligence-Dashboard/
+
+# OS
+.DS_Store
+Thumbs.db
